@@ -1,0 +1,49 @@
+aws:
+  region: us-east-1
+  s3:
+    logs_bucket: your-logs-bucket
+    logs_prefix: logs/raw/
+    parquet_prefix: logs/parquet/
+    results_prefix: ml-results/
+  athena:
+    database: logs_db
+    workgroup: ml-usage-analysis
+    query_results_bucket: s3://your-athena-results/query-results/
+    max_scan_mb: 1000        # Hard stop — prevents runaway Athena costs
+    table: access_logs
+  glue:
+    catalog_database: logs_db
+
+processing:
+  lookback_days: 30
+  incremental: true           # Only process new data since last run
+  cache_dir: .cache/
+  sample_rate: 1.0            # Reduce to 0.1–0.5 for large datasets (>1B rows)
+  parquet_compression: snappy # snappy = faster; gzip = smaller
+
+models:
+  clustering:
+    n_clusters: 8
+    algorithm: kmeans           # kmeans | dbscan
+    auto_k: false               # Auto-select K via silhouette score (slower)
+    dbscan_eps: 0.5
+    dbscan_min_samples: 5
+    retrain_interval_days: 7
+  forecasting:
+    horizon_hours: 24
+    confidence_interval: 0.95
+    top_n_services: 20          # Only forecast top N to control compute cost
+  anomaly_detection:
+    contamination: 0.05         # Expected anomaly fraction
+    method: isolation_forest    # isolation_forest | zscore
+
+reporting:
+  output_dir: reports/
+  top_n_services: 20
+  alert_thresholds:
+    anomaly_score: 0.75
+    growth_rate_pct: 50         # Alert if >50% WoW growth
+
+logging:
+  level: INFO
+  file: logs/pipeline.log

@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Pipeline cache & state
+.cache/
+.cache_demo/
+
+# Reports output (generated)
+reports/*.json
+
+# Logs
+logs/*.log
+
+# Trained model artefacts (large binary files)
+.cache/models/*.pkl
+.cache_demo/models/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
